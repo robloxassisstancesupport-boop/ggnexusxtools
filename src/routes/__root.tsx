@@ -77,14 +77,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "NexusX Tools" },
+      { name: "description", content: "NexusX Tools collection includes:
+Cookie Refresher 
+Bypasser" },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "NexusX Tools" },
+      { property: "og:description", content: "NexusX Tools collection includes:
+Cookie Refresher 
+Bypasser" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "NexusX Tools" },
+      { name: "twitter:description", content: "NexusX Tools collection includes:
+Cookie Refresher 
+Bypasser" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/8a51f76f-06d7-4b54-a350-ad36ba908f8f" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/8a51f76f-06d7-4b54-a350-ad36ba908f8f" },
     ],
     links: [
       {
