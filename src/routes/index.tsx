@@ -34,8 +34,8 @@ function Bolt({ className = "" }: { className?: string }) {
 
 function LogoBadge() {
   return (
-    <div className="grid h-12 w-12 place-items-center rounded-xl border border-nx-gold/40 bg-black/70 text-nx-gold shadow-[inset_0_0_20px_rgba(250,204,21,0.25)]">
-      <Bolt className="h-6 w-6 drop-shadow-[0_0_6px_rgba(250,204,21,0.8)]" />
+    <div className="grid h-12 w-12 place-items-center rounded-xl border border-white/40 bg-black/70 text-white shadow-[inset_0_0_20px_rgba(255,255,255,0.15)]">
+      <Bolt className="h-6 w-6 drop-shadow-[0_0_6px_rgba(255,255,255,0.7)]" />
     </div>
   );
 }
