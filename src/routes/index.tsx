@@ -59,7 +59,7 @@ function NexusX() {
           href="https://discord.gg/HeM2ardrVg"
           target="_blank"
           rel="noopener noreferrer"
-          className="group inline-flex items-center gap-2 rounded-xl bg-[#5865F2] px-5 py-2.5 font-semibold text-white shadow-[0_0_30px_rgba(88,101,242,0.45)] transition hover:bg-[#6b76f5]"
+          className="group inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 font-semibold text-black shadow-[0_0_30px_rgba(255,255,255,0.25)] transition hover:bg-white/90"
         >
           <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current" aria-hidden>
             <path d="M20.317 4.369A19.79 19.79 0 0 0 16.558 3a14.5 14.5 0 0 0-.65 1.342 18.27 18.27 0 0 0-5.487 0A14 14 0 0 0 9.77 3a19.74 19.74 0 0 0-3.76 1.37C2.605 9.043 1.68 13.58 2.143 18.05a19.94 19.94 0 0 0 6.06 3.06c.49-.665.926-1.371 1.301-2.113-.71-.266-1.39-.594-2.036-.98.171-.126.338-.258.5-.394 3.927 1.79 8.18 1.79 12.06 0 .163.136.33.268.5.394-.647.387-1.328.715-2.04.981.376.741.812 1.447 1.302 2.112a19.9 19.9 0 0 0 6.063-3.06c.543-5.18-.93-9.68-3.535-13.681ZM9.7 15.567c-1.182 0-2.157-1.085-2.157-2.42 0-1.333.955-2.42 2.157-2.42 1.207 0 2.176 1.094 2.157 2.42 0 1.335-.96 2.42-2.157 2.42Zm8.6 0c-1.183 0-2.157-1.085-2.157-2.42 0-1.333.954-2.42 2.157-2.42 1.207 0 2.176 1.094 2.157 2.42 0 1.335-.95 2.42-2.157 2.42Z" />
